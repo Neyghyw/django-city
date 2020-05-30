@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from shops import views
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('city/<int:city>/street/', views.Getstreets),
+    path('shop/', views.Getshop),
+    path('city/', views.Getcities),
+    path('shop/', views.Shopcreate),
 ]
