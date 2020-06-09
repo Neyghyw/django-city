@@ -19,7 +19,6 @@ from django.urls import re_path
 from shops import views
 urlpatterns = [
     path('city/<int:city>/street/', views.Getstreets),
-    path('shop/', views.Getshop),
+    path('shop/', views.Shops),
     path('city/', views.Getcities),
-    path('^shop/$', views.Shopcreate),
 ]

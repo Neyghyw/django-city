@@ -18,21 +18,17 @@ def Getstreets(request, city):
     streets = Street.objects.filter(street_city_id=city)
     return render(request, "streets.html", {"streets": streets})
 
-
-def Shopcreate(request):
-    return HttpResponseBadRequest("<h2>Shop create</h2>")
-
-
-def Getshop(request):
-    street = request.GET.get("street")
-    city = request.GET.get("city")
-    open = request.GET.get("open")
-    if open == "1":
-        print("open 1")
-        shops = Shop.objects.filter(shop_city_id=city, shop_street_id=street, shop_time_to_open__lte=timezone.now(),
-                                    shop_time_to_close__gte=timezone.now())
-    else:
-        print("open 0")
-        shops = Shop.objects.filter(shop_city_id=city, shop_street_id=street, shop_time_to_open__gt=timezone.now(),
-                                    shop_time_to_close__gt=timezone.now())
-    return render(request, "getshops.html", {"shops": shops})
+def Shops(request):
+    if request.method == 'POST':
+        return HttpResponse("<h2>Shop create</h2>")
+    elif request.method == 'GET':
+        street = request.GET.get("street", -1)
+        city = request.GET.get("city", -1)
+        open = request.GET.get("open", -1)
+        if open == "1":
+            shops = Shop.objects.filter(shop_city_id=city, shop_street_id=street, shop_time_to_open__lte=timezone.now(),
+                                        shop_time_to_close__gte=timezone.now())
+        else:
+            shops = Shop.objects.filter(shop_city_id=city, shop_street_id=street, shop_time_to_open__gt=timezone.now(),
+                                        shop_time_to_close__gt=timezone.now())
+        return render(request, "getshops.html", {"shops": shops})
