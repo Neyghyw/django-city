@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body class="containers">
+    {% if shops.count > 0 %}
+    <h2>Список магазинов</h2>
+    <table>
+        <tr><th>Название</th><th>Улица</th><th>Город</th><th>Дом</th><th>Время открытия</th><th>Время закрытия</th></tr>
+        {% for shop in shops %}
+        <tr>
+            <td>{{ shop.shop_name }}</td>
+            <td>{{ shop.shop_street_id.street_name }}</td>
+            <td>{{ shop.shop_city_id.city_name }}</td>
+            <td>{{ shop.shop_house_id }}</td>
+            <td>{{ shop.shop_time_to_open|time:"H:i"}}</td>
+            <td>{{ shop.shop_time_to_close|time:"H:i"}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div>Магазины, подходящие под ваши критерии, не найдены</div>
+    {% endif %}
+    <h2>Время сервера: {% now "H:i" %}</h2>
+</body>
+</html>
