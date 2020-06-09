@@ -6,6 +6,7 @@ from .models import Shop
 import datetime
 from django.utils import timezone
 
+
 # Create your views here.
 
 def Getcities(request):
@@ -26,7 +27,6 @@ def Getshop(request):
     street = request.GET.get("street")
     city = request.GET.get("city")
     open = request.GET.get("open")
-    shops = Shop.objects.filter(shop_city_id=city, shop_street_id=street, shop_time_to_open__lte=timezone.now(), shop_time_to_close__gte=timezone.now())
+    shops = Shop.objects.filter(shop_city_id=city, shop_street_id=street, shop_time_to_open__lte=timezone.now(),
+                                shop_time_to_close__gte=timezone.now())
     return render(request, "getshops.html", {"shops": shops})
-
-
