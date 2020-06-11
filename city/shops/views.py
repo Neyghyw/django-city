@@ -5,6 +5,7 @@ from .models import Street
 from .models import Shop
 import datetime
 from django.utils import timezone
+from .forms import ShopsFilterForm
 
 
 # Create your views here.
@@ -27,13 +28,14 @@ def Getstreets(request, city) -> HttpResponse:
 
 
 def Shops(request) -> HttpResponse:
-
+    form = ShopsFilterForm()
     if request.method == 'POST':
         return HttpResponse("<h2>Shop create</h2>")
 
     elif request.method == 'GET':
 
         try:
+            shops = Shop()
             street = request.GET.get("street", -1)
             city = request.GET.get("city", -1)
             open = request.GET.get("open", -1)
@@ -41,12 +43,11 @@ def Shops(request) -> HttpResponse:
                 shops = Shop.objects.filter(shop_city_id=city, shop_street_id=street,
                                             shop_time_to_open__lte=timezone.now(),
                                             shop_time_to_close__gte=timezone.now())
-                print(type(shops))
             elif open == "0":
                 shops = Shop.objects.filter(shop_city_id=city, shop_street_id=street,
                                             shop_time_to_open__gt=timezone.now(),
                                             shop_time_to_close__gt=timezone.now())
-            return render(request, "getshops.html", {"shops": shops}, status=200)
+            return render(request, "getshops.html", {"shops": shops, "form": form}, status=200)
 
         except:
             return HttpResponse("<h2>Status 400</h2>", status=400)
