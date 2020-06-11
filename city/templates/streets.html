@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body class="containers">
+    {% if streets.count > 0 %}
+    <h2>Список улиц города {{streets.first.street_city_id.city_name}}</h2>
+    <table>
+        <tr><th>Id</th><th>Название</th></tr>
+        {% for street in streets %}
+        <tr><td>{{ street.id }}</td><td>{{ street.street_name }}</td></tr>
+        {% endfor %}
+    </table>
+    {%else%}
+    <div>В этом городе улиц не обнаружено</div>
+    {% endif %}
+</body>
+</html>
