@@ -3,10 +3,12 @@ from django.http import *
 from .models import City
 from .models import Street
 from .models import Shop
+from django.http import HttpResponse, JsonResponse
+from rest_framework.parsers import JSONParser
 import datetime
 from django.utils import timezone
 from .forms import ShopsFilterForm
-
+from .serializers import ShopSerializer
 
 # Create your views here.
 
@@ -30,7 +32,12 @@ def Getstreets(request, city) -> HttpResponse:
 def Shops(request) -> HttpResponse:
     form = ShopsFilterForm()
     if request.method == 'POST':
-        return HttpResponse("<h2>Shop create</h2>")
+        data = JSONParser().parse(request)
+        serializer = ShopSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'GET':
 
