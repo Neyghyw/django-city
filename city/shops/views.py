@@ -1,16 +1,15 @@
 from django.shortcuts import render
 from django.http import *
-from .models import City
-from .models import Street
-from .models import Shop
-from django.http import HttpResponse, JsonResponse
-from rest_framework.parsers import JSONParser
-import datetime
 from django.utils import timezone
+
+import datetime
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import (City, Street, Shop)
 from .forms import ShopsFilterForm
 from .serializers import ShopSerializer
 
-# Create your views here.
 
 def Getcities(request) -> HttpResponse:
     try:
@@ -32,12 +31,7 @@ def Getstreets(request, city) -> HttpResponse:
 def Shops(request) -> HttpResponse:
     form = ShopsFilterForm()
     if request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = ShopSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+        ShopsListView.as_view()
 
     elif request.method == 'GET':
 
@@ -58,3 +52,12 @@ def Shops(request) -> HttpResponse:
 
         except:
             return HttpResponse("<h2>Status 400</h2>", status=400)
+
+
+class ShopsListView(APIView):
+    def get(self, request):
+        shops = Shop.objects.all()
+        user = self.request.user
+        data = ShopSerializer(Shop.objects.filter(), many=True).data
+        return Response(data)
+

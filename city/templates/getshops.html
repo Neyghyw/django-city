@@ -34,9 +34,6 @@
 <h2>Время сервера: {% now "H:i" %}</h2>
 <form action="" method="POST" novalidate>
         {% csrf_token %}
-    <table>
-        {{ form }}
-    </table>
     <input type="submit" value="Создать" >
 </form>
 </body>
