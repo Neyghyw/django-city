@@ -1,15 +1,15 @@
+import io
+
 from django.shortcuts import render
 from django.http import *
 from django.utils import timezone
-from django_filters.rest_framework import DjangoFilterBackend
-import datetime
-
+import json
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
 
 from .models import (City, Street, Shop)
-from .forms import ShopsFilterForm
 from .serializers import ShopSerializer
 
 
@@ -32,24 +32,30 @@ class ShopsListView(generics.ListCreateAPIView):
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        content = JSONRenderer().render(serializer.data)
+
+        stream = io.BytesIO(content)
+        data = JSONParser().parse(stream)
+        data['id'] = (Shop.objects.values_list().last())[0] + 1
         item = Shop.objects.create(
 
-            id=(Shop.objects.values_list().last())[0] + 1,
+            id=data['id'],
 
-            shop_name=serializer.data['shop_name'],
+            shop_name=data['shop_name'],
 
-            shop_city_id=City.objects.get(city_name=serializer.data['shop_city_id']['city_name']),
+            shop_city_id=City.objects.get(city_name=data['shop_city_id']['city_name']),
 
-            shop_street_id=Street.objects.get(street_name=serializer.data['shop_street_id']['street_name']),
+            shop_street_id=Street.objects.get(street_name=data['shop_street_id']['street_name']),
 
-            shop_house_id=serializer.data['shop_house_id'],
+            shop_house_id=data['shop_house_id'],
 
-            shop_time_to_open=serializer.data['shop_time_to_open'],
+            shop_time_to_open=data['shop_time_to_open'],
 
-            shop_time_to_close=serializer.data['shop_time_to_close'], )
+            shop_time_to_close=data['shop_time_to_close'], )
 
-        result = ShopSerializer(item)
-        return Response(result.data, status=status.HTTP_200_OK)
+        result = ShopSerializer(data)
+        resp_data = {"id": data["id"]}
+        return JsonResponse(resp_data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
 
