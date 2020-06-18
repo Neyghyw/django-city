@@ -1,5 +1,6 @@
 from django import forms
 
+
 class ShopsFilterForm(forms.Form):
     shop_name = forms.CharField()
     shop_city_id = forms.IntegerField()
