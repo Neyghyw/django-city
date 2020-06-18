@@ -3,7 +3,7 @@ import io
 from django.shortcuts import render
 from django.http import *
 from django.utils import timezone
-import json
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
@@ -33,19 +33,22 @@ class ShopsListView(generics.ListCreateAPIView):
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         content = JSONRenderer().render(serializer.data)
-
         stream = io.BytesIO(content)
         data = JSONParser().parse(stream)
+
         data['id'] = (Shop.objects.values_list().last())[0] + 1
+        data['shop_city_id'] = City.objects.get(city_name=data['shop_city_id']['city_name'])
+        data['shop_street_id'] = Street.objects.get(street_name=data['shop_street_id']['street_name'])
+
         item = Shop.objects.create(
 
             id=data['id'],
 
             shop_name=data['shop_name'],
 
-            shop_city_id=City.objects.get(city_name=data['shop_city_id']['city_name']),
+            shop_city_id=data['shop_city_id'],
 
-            shop_street_id=Street.objects.get(street_name=data['shop_street_id']['street_name']),
+            shop_street_id=data['shop_street_id'],
 
             shop_house_id=data['shop_house_id'],
 
@@ -53,7 +56,6 @@ class ShopsListView(generics.ListCreateAPIView):
 
             shop_time_to_close=data['shop_time_to_close'], )
 
-        result = ShopSerializer(data)
         resp_data = {"id": data["id"]}
         return JsonResponse(resp_data, status=status.HTTP_200_OK)
 
