@@ -14,13 +14,19 @@ from .serializers import ShopSerializer
 
 
 def Getcities(request) -> HttpResponse:
-    cities = City.objects.all()
-    return render(request, "index.html", {"cities": cities}, status=200)
+    try:
+        cities = City.objects.all()
+        return render(request, "index.html", {"cities": cities}, status=200)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def Getstreets(request, city) -> HttpResponse:
-    streets = Street.objects.filter(street_city_id=city)
-    return render(request, "streets.html", {"streets": streets}, status=200)
+    try:
+        streets = Street.objects.filter(street_city_id=city)
+        return render(request, "streets.html", {"streets": streets}, status=200)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopsListView(generics.ListCreateAPIView):
@@ -41,19 +47,12 @@ class ShopsListView(generics.ListCreateAPIView):
         data['shop_street_id'] = Street.objects.get(street_name=data['shop_street_id']['street_name'])
 
         item = Shop.objects.create(
-
             id=data['id'],
-
             shop_name=data['shop_name'],
-
             shop_city_id=data['shop_city_id'],
-
             shop_street_id=data['shop_street_id'],
-
             shop_house_id=data['shop_house_id'],
-
             shop_time_to_open=data['shop_time_to_open'],
-
             shop_time_to_close=data['shop_time_to_close'], )
 
         resp_data = {"id": data["id"]}
