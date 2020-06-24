@@ -5,24 +5,24 @@ from .models import (Shop, City, Street)
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
-        fields = ['city_name']
+        fields = ['name']
 
 
 class StreetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Street
-        fields = ['street_name']
+        fields = ['name']
 
 
 class ShopSerializer(serializers.ModelSerializer):
-    shop_city_id = CitySerializer(read_only=False)
-    shop_street_id = StreetSerializer(read_only=False)
+    city_id = CitySerializer(read_only=False)
+    street_id = StreetSerializer(read_only=False)
 
     class Meta:
         model = Shop
-        fields = ['shop_name',
-                  'shop_house_id',
-                  'shop_time_to_open',
-                  'shop_time_to_close',
-                  'shop_city_id',
-                  'shop_street_id']
+        fields = ['name',
+                  'house_id',
+                  'time_to_open',
+                  'time_to_close',
+                  'city_id',
+                  'street_id']
