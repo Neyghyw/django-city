@@ -23,7 +23,7 @@ def Getcities(request) -> HttpResponse:
 
 def Getstreets(request, city) -> HttpResponse:
     try:
-        streets = Street.objects.filter(street_city_id=city)
+        streets = Street.objects.filter(city_id=city)
         return render(request, "streets.html", {"streets": streets}, status=200)
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -43,17 +43,17 @@ class ShopsListView(generics.ListCreateAPIView):
         data = JSONParser().parse(stream)
 
         data['id'] = (Shop.objects.values_list().last())[0] + 1
-        data['shop_city_id'] = City.objects.get(city_name=data['shop_city_id']['city_name'])
-        data['shop_street_id'] = Street.objects.get(street_name=data['shop_street_id']['street_name'])
+        data['city_id'] = City.objects.get(name=data['city_id']['city_name'])
+        data['street_id'] = Street.objects.get(name=data['street_id']['street_name'])
 
         item = Shop.objects.create(
             id=data['id'],
-            shop_name=data['shop_name'],
-            shop_city_id=data['shop_city_id'],
-            shop_street_id=data['shop_street_id'],
-            shop_house_id=data['shop_house_id'],
-            shop_time_to_open=data['shop_time_to_open'],
-            shop_time_to_close=data['shop_time_to_close'], )
+            name=data['name'],
+            city_id=data['city_id'],
+            street_id=data['street_id'],
+            house_id=data['house_id'],
+            time_to_open=data['time_to_open'],
+            time_to_close=data['time_to_close'], )
 
         resp_data = {"id": data["id"]}
         return JsonResponse(resp_data, status=status.HTTP_200_OK)
@@ -63,19 +63,19 @@ class ShopsListView(generics.ListCreateAPIView):
         queryset = Shop.objects.all()
         street = self.request.query_params.get('street', None)
         city = self.request.query_params.get('city', None)
-        open = self.request.query_params.get('open', None)
+        worked = self.request.query_params.get('open', None)
 
         if street is not None:
-            queryset = queryset.filter(shop_street_id=street)
+            queryset = queryset.filter(street_id=street)
         if city is not None:
-            queryset = queryset.filter(shop_city_id=city)
-        if open is not None:
-            if open == "1":
+            queryset = queryset.filter(city_id=city)
+        if worked is not None:
+            if worked == "1":
                 queryset = queryset.filter(
-                    shop_time_to_open__lte=timezone.now(),
-                    shop_time_to_close__gte=timezone.now())
-            elif open == "0":
+                    time_to_open__lte=timezone.now(),
+                    time_to_close__gte=timezone.now())
+            elif worked == "0":
                 queryset = queryset.filter(
-                    shop_time_to_open__gt=timezone.now(),
-                    shop_time_to_close__gt=timezone.now())
+                    time_to_open__gt=timezone.now(),
+                    time_to_close__gt=timezone.now())
         return queryset
