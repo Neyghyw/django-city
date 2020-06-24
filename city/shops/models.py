@@ -11,6 +11,7 @@ class Street(models.Model):
 
 
 class Shop(models.Model):
+    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     name = models.CharField(max_length=40)
     city_id = models.ForeignKey(City, on_delete=models.CASCADE)
     street_id = models.ForeignKey(Street, on_delete=models.CASCADE)

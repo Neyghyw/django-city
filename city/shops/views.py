@@ -42,12 +42,10 @@ class ShopsListView(generics.ListCreateAPIView):
         stream = io.BytesIO(content)
         data = JSONParser().parse(stream)
 
-        data['id'] = (Shop.objects.values_list().last())[0] + 1
-        data['city_id'] = City.objects.get(name=data['city_id']['city_name'])
-        data['street_id'] = Street.objects.get(name=data['street_id']['street_name'])
+        data['city_id'] = City.objects.get(name=data['city_id']['name'])
+        data['street_id'] = Street.objects.get(name=data['street_id']['name'])
 
         item = Shop.objects.create(
-            id=data['id'],
             name=data['name'],
             city_id=data['city_id'],
             street_id=data['street_id'],
@@ -55,7 +53,7 @@ class ShopsListView(generics.ListCreateAPIView):
             time_to_open=data['time_to_open'],
             time_to_close=data['time_to_close'], )
 
-        resp_data = {"id": data["id"]}
+        resp_data = {"id": (Shop.objects.values_list().last())[0]}
         return JsonResponse(resp_data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
