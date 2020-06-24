@@ -34,27 +34,27 @@ class ShopsListView(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+
         if not serializer.is_valid():
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            data = serializer.validated_data
+            data['city_id'] = City.objects.get(name=data['city_id']['name'])
+            data['street_id'] = Street.objects.get(name=data['street_id']['name'])
 
-        content = JSONRenderer().render(serializer.data)
-        stream = io.BytesIO(content)
-        data = JSONParser().parse(stream)
+            item = Shop.objects.create(
+                name=data['name'],
+                city_id=data['city_id'],
+                street_id=data['street_id'],
+                house_id=data['house_id'],
+                time_to_open=data['time_to_open'],
+                time_to_close=data['time_to_close'], )
 
-        data['city_id'] = City.objects.get(name=data['city_id']['name'])
-        data['street_id'] = Street.objects.get(name=data['street_id']['name'])
-
-        item = Shop.objects.create(
-            name=data['name'],
-            city_id=data['city_id'],
-            street_id=data['street_id'],
-            house_id=data['house_id'],
-            time_to_open=data['time_to_open'],
-            time_to_close=data['time_to_close'], )
-
-        resp_data = {"id": (Shop.objects.values_list().last())[0]}
-        return JsonResponse(resp_data, status=status.HTTP_200_OK)
+            resp_data = {"id": item.id}
+            return JsonResponse(resp_data, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
 
